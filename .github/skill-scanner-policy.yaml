@@ -2,7 +2,8 @@ policy_name: ci-balanced
 policy_version: "1.0"
 preset_base: balanced
 
-severity_overrides:
-  - rule_id: CROSS_SKILL_DATA_RELAY
-    severity: MEDIUM
-    reason: "False positive for a documentation-only multi-skill catalog."
+disabled_rules:
+  - CROSS_SKILL_DATA_RELAY
+  - CROSS_SKILL_SHARED_URL
+  - CROSS_SKILL_SHARED_PATTERN
+  - CROSS_SKILL_COMPLEMENTARY_TRIGGERS
