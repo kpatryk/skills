@@ -21,10 +21,14 @@ This repository is packaged as a GitHub Copilot CLI plugin (`kpatryk-skills`). I
 
 ```bash
 # Install directly from GitHub
-copilot plugin install gh:kpatryk/skills
+copilot plugin install kpatryk/skills
+
+# Or add as a marketplace and install from there
+copilot plugin marketplace add kpatryk/skills
+copilot plugin marketplace browse kpatryk-skills
 
 # Or install from a local clone
-copilot plugin install ./skills
+copilot plugin install ./path/to/skills
 
 # Verify the plugin is loaded
 copilot plugin list

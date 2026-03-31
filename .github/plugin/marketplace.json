@@ -1,0 +1,26 @@
+{
+  "name": "kpatryk-skills",
+  "owner": {
+    "name": "Patryk",
+    "email": "8299306+kpatryk@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "A curated collection of AI skills for developer tools — covering Python, JS/TS, security, and workflow automation.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "kpatryk-skills",
+      "description": "A curated collection of AI skills for developer tools — covering Python, JS/TS, security, and workflow automation.",
+      "version": "0.1.0",
+      "source": ".",
+      "license": "MIT",
+      "keywords": ["python", "javascript", "security", "testing", "linting", "devtools", "ai-skills"],
+      "author": {
+        "name": "Patryk",
+        "email": "8299306+kpatryk@users.noreply.github.com"
+      },
+      "repository": "https://github.com/kpatryk/skills"
+    }
+  ]
+}

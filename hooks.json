@@ -1,13 +1,3 @@
 {
-  "_comment": "Hooks run shell commands at specific lifecycle events in the Copilot CLI session.",
-  "_schema": {
-    "hooks": [
-      {
-        "event": "<string> — lifecycle event, e.g. 'pre-tool-call' | 'post-tool-call' | 'session-start' | 'session-end'",
-        "command": "<string> — shell command to execute",
-        "condition": "<string, optional> — expression that must be truthy for the hook to run"
-      }
-    ]
-  },
   "hooks": []
 }
