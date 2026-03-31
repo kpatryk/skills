@@ -52,8 +52,8 @@ if [[ "$LENIENT" == "true" ]]; then
 fi
 
 if [[ -n "$EXTRA_ARGS" ]]; then
-  # shellcheck disable=SC2206
-  extra=( $EXTRA_ARGS )
+  # EXTRA_ARGS supports simple space-separated flags only.
+  read -r -a extra <<<"$EXTRA_ARGS"
   cmd+=("${extra[@]}")
 fi
 
