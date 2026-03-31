@@ -1,0 +1,53 @@
+name: Scan Skills
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "scripts/scan-skills.sh"
+      - ".github/workflows/scan-skills.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/**"
+      - "scripts/scan-skills.sh"
+      - ".github/workflows/scan-skills.yml"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  skill-scanner:
+    name: Skill Scanner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup uv (with cache)
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Install skill-scanner
+        run: uv tool install cisco-ai-skill-scanner
+
+      - name: Run skill-scanner against skills/
+        run: ./scripts/scan-skills.sh
+
+      - name: Upload SARIF report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: skill-scanner-results.sarif
