@@ -1,0 +1,15 @@
+{
+  "name": "kpatryk-skills",
+  "description": "A curated collection of AI skills for developer tools — covering Python, JS/TS, security, and workflow automation.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Patryk",
+    "email": "8299306+kpatryk@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "keywords": ["python", "javascript", "security", "testing", "linting", "devtools", "ai-skills"],
+  "skills": "skills/",
+  "agents": "agents/",
+  "hooks": "hooks.json",
+  "mcpServers": ".mcp.json"
+}
