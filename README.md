@@ -29,6 +29,8 @@ Skills are organized into categories based on their primary use case:
 | Skill | Purpose |
 |-------|---------|
 | **bandit** | Python AST-based security linting and vulnerability detection |
+| **cosmic-ray** | Session-based distributed mutation testing with pluggable executors and reporters |
+| **mutmut** | Incremental mutation testing with TUI-driven workflow and type-checker filtering |
 | **pyrefly** | Type checking by Meta (Rust-based, baseline file support) |
 | **pytest** | Python testing framework with fixtures, parametrize, and mocking |
 | **ruff** | Fast Python linting and formatting (Rust-based) |
@@ -46,6 +48,7 @@ Skills are organized into categories based on their primary use case:
 | Skill | Purpose |
 |-------|---------|
 | **semgrep** | Semantic pattern matching across 30+ programming languages for static analysis |
+| **skill-scanner** | Security scanner for Agent Skills detecting prompt injection, exfiltration, and command abuse (Cisco AI Defense) |
 | **trufflehog** | Secrets detection in repos, filesystems, S3, and Docker containers |
 
 ### Developer Workflow & Tooling
