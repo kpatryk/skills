@@ -1,5 +1,6 @@
 ---
 name: cosmic-ray
+license: MIT
 description: >
   Comprehensive guide for Cosmic Ray, the Python mutation testing framework with
   session-based execution, distributors, and reporting tools. Use this skill whenever

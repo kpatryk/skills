@@ -1,5 +1,6 @@
 ---
 name: bandit
+license: MIT
 description: >
   Comprehensive reference for Bandit — the Python AST-based security linter from PyCQA that detects common security vulnerabilities in Python code. Use this skill whenever the user asks about running Bandit scans, interpreting Bandit findings, suppressing false positives with nosec, configuring Bandit via pyproject.toml or bandit.yaml, selecting or skipping specific test IDs (B101–B704), setting up Bandit in CI/CD, generating baselines to track new issues, or integrating Bandit with pre-commit. Trigger on any mention of bandit, Python security scanning, SAST for Python, hardcoded passwords in Python, SQL injection detection, shell injection in Python, pickle deserialization, or insecure Python imports.
 ---

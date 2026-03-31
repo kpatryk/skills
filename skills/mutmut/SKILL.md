@@ -1,5 +1,6 @@
 ---
 name: mutmut
+license: MIT
 description: >
   Comprehensive guide for mutmut, a Python mutation testing tool focused on fast,
   incremental workflows. Use this skill whenever a user asks about mutation testing,

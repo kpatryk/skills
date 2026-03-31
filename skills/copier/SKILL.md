@@ -1,5 +1,6 @@
 ---
 name: copier
+license: MIT
 description: |
   Create and manage project templates with Copier, a Python-based scaffolding tool. Use this skill whenever the user:
   - Wants to generate projects from templates (copier copy)

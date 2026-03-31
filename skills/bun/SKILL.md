@@ -1,5 +1,6 @@
 ---
 name: bun
+license: MIT
 description: |
   Bun is an all-in-one JavaScript/TypeScript runtime, package manager, bundler, and test runner. Use this skill whenever the user needs to work with Bun — whether running TypeScript/JSX files, managing packages, bundling applications, or running tests. This includes questions about bun run, bun install, bun build, bun test, bunx, .env loading, or any Bun-specific features. Even if the user doesn't explicitly mention Bun, use this skill when they're working with JavaScript/TypeScript projects and Bun could be a suitable alternative to Node.js/npm/Webpack/Jest workflows.
 

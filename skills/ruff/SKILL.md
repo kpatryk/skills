@@ -1,5 +1,6 @@
 ---
 name: ruff
+license: MIT
 description: |
   Expert guidance for ruff — the extremely fast Python linter and formatter written in Rust. Use this skill whenever the user mentions ruff, wants to lint or format Python code, asks about pyproject.toml linting config, wants to migrate from flake8/black/isort/pylint to a single tool, wants to set up pre-commit hooks for Python quality, asks about fixing unused imports or style violations, or needs to configure or debug ruff rules. Also trigger when the user asks about Python code quality tooling in general, since ruff is almost always the right recommendation.
 ---
