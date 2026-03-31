@@ -5,6 +5,7 @@ on:
     paths:
       - "skills/**"
       - "scripts/scan-skills.sh"
+      - ".github/skill-scanner-policy.yaml"
       - ".github/workflows/scan-skills.yml"
   push:
     branches:
@@ -12,6 +13,7 @@ on:
     paths:
       - "skills/**"
       - "scripts/scan-skills.sh"
+      - ".github/skill-scanner-policy.yaml"
       - ".github/workflows/scan-skills.yml"
 
 permissions:
@@ -44,6 +46,8 @@ jobs:
         run: uv tool install cisco-ai-skill-scanner
 
       - name: Run skill-scanner against skills/
+        env:
+          POLICY: .github/skill-scanner-policy.yaml
         run: ./scripts/scan-skills.sh
 
       - name: Upload SARIF report
