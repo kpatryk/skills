@@ -1,0 +1,37 @@
+minimum_pre_commit_version: '4.0.0'
+
+default_stages: [pre-commit]
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
+repos:
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v4.4.0
+  hooks:
+    - id: conventional-pre-commit
+      stages: [commit-msg]
+      args: [--verbose]
+
+- repo: https://github.com/jumanjihouse/pre-commit-hooks
+  rev: 3.0.0
+  hooks:
+  - id: forbid-binary
+  - id: script-must-have-extension
+  - id: shellcheck
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-executables-have-shebangs
+  - id: check-merge-conflict
+  - id: check-toml
+  - id: check-yaml
+    args: [--allow-multiple-documents]
+  - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: fix-byte-order-marker
+  - id: mixed-line-ending
+  - id: trailing-whitespace
+    args: [--markdown-linebreak-ext=md]

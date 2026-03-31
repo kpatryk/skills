@@ -1,0 +1,36 @@
+[tools]
+python = "3.12"
+uv = "latest"
+
+[settings]
+# Automatically create .venv if it doesn't exist, then activate it
+python.uv_venv_auto = "create|source"
+
+[env]
+# Make mise fully aware of the uv-managed virtual environment
+_.python.venv = { path = ".venv" }
+
+[tasks.install]
+description = "Install dependencies and set up pre-commit hooks"
+run = [
+  "uv sync --dev",
+  "pre-commit install"
+]
+
+[tasks.clean]
+description = "Remove cache files, temporary directories, and build artifacts"
+run = """
+    rm -rf \
+      __pycache__ .pytest_cache .ruff_cache .mypy_cache \
+      .coverage htmlcov \
+      *.py[cod] *.egg-info dist build
+"""
+
+# Useful shortcuts
+[tasks.sync]
+description = "Sync dependencies with uv (alias for uv sync --dev)"
+run = "uv sync --dev"
+
+[tasks.pre-commit]
+description = "Run pre-commit hooks on all files"
+run = "pre-commit run --all-files"
