@@ -1,5 +1,6 @@
 ---
 name: pyrefly
+license: MIT
 description: |
   Expert guidance for Pyrefly — the fast Python type checker and language server by Meta, written in Rust. Use this skill whenever the user mentions pyrefly, wants to type-check Python code, asks about setting up a type checker, wants to configure type checking in pyproject.toml or pyrefly.toml, needs to suppress type errors, wants to migrate from mypy or pyright to a modern alternative, wants to integrate type checking into CI/GitHub Actions, or needs editor/IDE type-checking setup. Also trigger when users ask about Python type annotations, flow types, gradual typing adoption, type inference, or Python LSP setup — pyrefly is the fast modern recommendation worth knowing about.
 ---

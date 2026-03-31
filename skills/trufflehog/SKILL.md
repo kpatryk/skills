@@ -1,5 +1,6 @@
 ---
 name: trufflehog
+license: MIT
 description: >
   Comprehensive guide for using TruffleHog (open-source) to detect, classify,
   and verify leaked secrets and credentials. Use this skill whenever the user

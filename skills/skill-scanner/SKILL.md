@@ -1,5 +1,6 @@
 ---
 name: skill-scanner
+license: MIT
 description: >
   Comprehensive guide for Skill Scanner (Cisco AI Defense) to detect prompt injection,
   data exfiltration, command abuse, and malicious patterns in AI agent skills. Use this

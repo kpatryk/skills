@@ -1,5 +1,6 @@
 ---
 name: pytest
+license: MIT
 description: >
   Expert guidance for writing, organizing, debugging, and running Python tests with pytest.
   Covers fixtures, parametrize, marks, mocking (monkeypatch + pytest-mock), async tests,

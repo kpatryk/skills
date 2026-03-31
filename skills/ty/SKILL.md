@@ -1,5 +1,6 @@
 ---
 name: ty
+license: MIT
 description: |
   Expert guidance for ty — the extremely fast Python type checker written in Rust by Astral (makers of ruff and uv). Currently in beta. Use this skill whenever the user mentions ty, wants to type-check Python code, asks about Python type checking, wants to migrate from mypy or Pyright, needs to configure type checking rules, wants to integrate a type checker into their project, asks about type checking performance, or needs help with type checking errors and diagnostics. Also trigger when the user asks about fast Python tooling or Astral's tools in general.
 ---
@@ -66,16 +67,9 @@ mise install ty
 ```
 
 ### Standalone installer
-```bash
-# macOS / Linux
-curl -LsSf https://astral.sh/ty/install.sh | sh
+Use the official Astral installation docs for platform-specific installer instructions:
 
-# Specify version
-curl -LsSf https://astral.sh/ty/0.0.26/install.sh | sh
-
-# Windows (PowerShell)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/ty/install.ps1 | iex"
-```
+- https://docs.astral.sh/ty/getting-started/installation/
 
 ### Docker
 ```dockerfile

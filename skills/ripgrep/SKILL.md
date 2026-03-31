@@ -1,5 +1,6 @@
 ---
 name: ripgrep
+license: MIT
 description: >
   Expert guide for using ripgrep (rg) — the blazing-fast, Rust-powered search tool that respects
   .gitignore and searches recursively by default. Use this skill whenever the user wants to search

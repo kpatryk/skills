@@ -1,351 +1,317 @@
 ---
 name: copier
-description: |
-  Create and manage project templates with Copier, a Python-based scaffolding tool. Use this skill whenever the user:
-  - Wants to generate projects from templates (copier copy)
-  - Needs to keep projects updated with template changes (copier update)
-  - Is creating or maintaining a template itself (copier.yml, Jinja2 templates, tasks, migrations)
-  - Has questions about template workflows, version management, or conditional prompts
-  - Wants to re-apply a template to a project (copier recopy)
-  - Needs help with .copier-answers.yml or template configuration
-  Use Copier when working with project scaffolding, template versioning, or batch project generation. This skill covers creating templates with conditional questions, post-copy tasks, Jinja2 templating, and intelligent project updates.
+description: >
+  Expert guide for working with the Copier template ecosystem (copy, update, recopy,
+  check-update, authoring copier.yaml/copier.yml, Jinja templating, questions, tasks,
+  migrations, answers files). Use this skill whenever the user mentions copier,
+  copier.yaml, copier.yml, copier template, scaffolding a project from a template,
+  updating a generated project, .copier-answers.yml, recopy, Jinja suffix, _tasks,
+  _migrations, _exclude, _subdirectory, or asks to create, debug, test, or update
+  a copier template or generated project — even if they don't say the word "copier"
+  explicitly but describe template-driven project generation or lifecycle updates.
 ---
 
-# Copier: Project Template Scaffolding
+# Copier — template authoring and project lifecycle
 
-Copier is a powerful Python library and CLI tool for rendering project templates and keeping generated projects in sync with template updates. It works with local paths and Git URLs, uses Jinja2 for templating, and handles complex workflows like version-aware updates and task execution.
+Copier renders project templates (Jinja + YAML questionnaire) and manages the
+lifecycle of generated projects. Two audiences: **template authors** (create/maintain
+templates) and **consumers** (copy/update projects).
 
-## Core Concepts
+## 1. Core operations — use the right one
 
-**Templates** are Git repositories containing a `copier.yml` config file, Jinja2-templated files/directories, and optional tasks or migrations.
+| Command | Purpose | When to use |
+|---|---|---|
+| `copier copy <src> <dst>` | Generate new project | First render; also overlays onto preexisting dir |
+| `copier update` (run inside project) | Smart update to newer template | Template evolved; preserves local edits via 3-way merge |
+| `copier recopy` | Dumb re-render, keep answers, discard history | Broken update, deleted-file recovery, or update algorithm can't run |
+| `copier check-update` | Report if template has newer version | Manual (`plain`) or CI (`--output-format json` / `--quiet` exit 2 = update available) |
 
-**Projects** are generated from templates and linked to them via `.copier-answers.yml`, enabling intelligent updates.
+Common flags (copy):
 
-**Questionnaires** collect answers from users to customize each project. Answers become template variables.
-
-## Quick Start
-
-### Create a template:
 ```bash
-# Initialize a git repo for your template
-mkdir my_template && cd my_template && git init
+copier copy --trust <src> <dst>            # required if template has _tasks/_migrations/_jinja_extensions
+copier copy --trust --defaults <src> <dst> # non-interactive, all defaults
+copier copy -d 'key=value' -d 'list=[a, b]' <src> <dst>  # override answers
+copier copy --data-file answers.yml <src> <dst>          # bulk answers (--data wins on conflict)
+copier copy --vcs-ref HEAD <src> <dst>     # dev: include dirty/unreleased changes
+copier copy --vcs-ref v2.0.0 <src> <dst>   # pin version
+copier copy --skip-tasks <src> <dst>       # skip _tasks (NOT migrations)
+copier copy --pretend <src> <dst>          # dry run
+copier copy --overwrite <src> <dst>        # overwrite without asking
+copier copy -f <src> <dst>                 # = --defaults --overwrite
+```
 
-# Create copier.yml with questions
-cat > copier.yml << 'EOF'
+Update flags (run in project dir, clean `git status` first):
+
+```bash
+copier update --trust                      # standard
+copier update --trust --defaults           # reuse all prior answers
+copier update --trust --defaults -d 'q=new'  # change one answer only
+copier update --vcs-ref=:current:          # re-answer questions, keep template version
+copier update --conflict rej|inline        # conflict style (default inline)
+copier update --skip-answered              # keep recorded answers, don't re-ask
+```
+
+## 2. Template anatomy
+
+```text
+my-template/                    # usually a Git repo with PEP 440 tags (v1.0.0)
+├── copier.yaml (or copier.yml) # questions + _settings (underscore-prefixed)
+├── template/                   # actual payload when _subdirectory: template
+│   ├── {{ _copier_conf.answers_file }}.jinja
+│   ├── README.md.jinja         # *.jinja → rendered, suffix stripped
+│   └── .gitignore              # no suffix → copied verbatim
+└── includes/ (optional)        # macros/partials — must be _excluded
+```
+
+Key settings in `copier.yaml`:
+
+```yaml
+_min_copier_version: "9.0.0"   # abort if installed copier is older
+_subdirectory: template        # isolate payload from template meta files
+_templates_suffix: .jinja      # which files Jinja renders ("" = render everything)
+_answers_file: .copier-answers.yml
+_preserve: [.copier-answers.yml]
+_exclude: ["~*", "*.py[co]", __pycache__, "*.rej"]
+_tasks: ["git init", "mise install"]
+_message_after_copy: |
+  Your project "{{ project_name }}" was created. Run `mise run check`.
+_message_after_update: |
+  Your project "{{ project_name }}" was updated. Resolve conflicts, then check.
+```
+
+`_exclude` vs `_skip_if_exists` vs `_tasks`-only-once:
+
+- `_exclude`: never copy (gitignore syntax via `pathspec`; `!` negates).
+  Templatable. Patterns match **destination paths** (after `.jinja` stripping),
+  so `*.bar` already covers `foo.bar.jinja` → `foo.bar`; do NOT add `*.bar.jinja`.
+  Use `_copier_operation == 'update'` guard for copy-once files.
+- `_skip_if_exists`: copy once; never overwrite if present; recreate on
+  `update` if missing (good for generated secrets).
+- `_exclude` with update-guard: never re-render on update even if missing.
+
+## 3. Questions — best practices
+
+Order matters: questions are asked top-to-bottom; a default/validator/`when`
+can only reference **earlier** answers.
+
+```yaml
 project_name:
   type: str
-  help: What is your project name?
-module_name:
+  help: Human-readable project name
+  default: my base project
+
+project_slug:
   type: str
-  help: What is your Python module name?
-EOF
+  help: URL/filesystem-safe slug
+  default: "{{ project_name|lower|replace(' ', '-')|replace('_', '-') }}"
+  validator: "{% if not (project_slug | regex_search('^[a-z][a-z0-9-]+$')) %}Use lowercase, digits, dashes; start with a letter.{% endif %}"
 
-# Create templated files (note the .jinja suffix)
-mkdir -p "{{project_name}}"
-cat > "{{project_name}}/{{module_name}}.py.jinja" << 'EOF'
-print("Hello from {{module_name}}!")
-EOF
-
-# Commit everything
-git add -A
-git commit -m "Initial template"
-git tag 0.1.0
-```
-
-### Generate a project from the template:
-```bash
-# From command line
-copier copy path/to/template /path/to/destination
-
-# From Python
-from copier import run_copy
-run_copy("path/to/template", "path/to/destination")
-
-# From Git URL (shortcuts available: gh:, gl:)
-copier copy gh:user/template /path/to/destination
-```
-
-### Update a project with template changes:
-```bash
-cd /path/to/project
-copier update
-```
-
-## copier.yml Configuration
-
-### Question Types
-Define user prompts at the root level of `copier.yml`. Simple format or advanced:
-
-```yaml
-simple_version:
-  "My project"
-
-advanced_version:
-  type: str              # bool, int, float, json, yaml, choice, multichoice, path
-  help: "What is your name?"
-  default: "John"
-  placeholder: "Enter your name"
-  secret: false          # Hide input if true
-  choices:
-    - Option 1
-    - Option 2
-  validator: "{% if len(name) < 3 %}Must be 3+ characters{% endif %}"
-  when: "{{ include_optional }}"  # Show only if condition is true
-```
-
-### Special Settings
-Copier settings start with underscore. Key ones:
-
-```yaml
-_min_copier_version: "9.0.0"
-_subdirectory: "template"        # Render files from this subdirectory only
-_exclude:                        # Patterns to skip
-  - "*.pyc"
-  - "__pycache__"
-_skip_if_exists:                 # Files to keep if they exist
-  - "README.md"
-_tasks:                          # Post-copy shell commands (requires --trust flag)
-  - "pip install -e ."
-  - "git init"
-_migrations:                     # Version-specific migration scripts
-  "0.1.0->0.2.0": |
-    import json
-    # Migration code here
-_message_before_copy: |
-  ⚠️ This template requires Python 3.10+
-_message_after_copy: |
-  ✅ Project created! Run: pip install -e .
-_answers_file: ".copier-answers.yml"  # Where to store answers
-_envops:                         # Jinja2 environment options
-  keep_trailing_newline: true
-_jinja_extensions:
-  - jinja2.ext.do
-  - jinja2.ext.loopcontrols
-```
-
-### Conditional Questions & Dynamic Choices
-```yaml
-use_database:
+use_ci:
   type: bool
-  help: Use a database?
-  default: false
+  help: Add CI workflow?
+  default: true
 
-db_type:
+ci_provider:
   type: str
-  help: Which database?
-  when: "{{ use_database }}"
-  choices: |
-    {%- if project_type == "web" %}
-    - PostgreSQL
-    - MySQL
-    {%- else %}
-    - SQLite
-    {%- endif %}
+  choices:
+    GitHub CI: github      # key shown to user, VALUE stored in template
+    GitLab CI: gitlab
+  default: github          # default must be the VALUE, not the key
+  when: "{{ use_ci }}"     # skip unless use_ci is true
+
+deploy_key:
+  type: str
+  secret: true             # hidden prompt, excluded from answers file
+  default: "{{ _external_data.secrets.deploy_key | default('changeme', true) }}"
+  placeholder: "paste deploy key"  # visual hint only, not a value
 ```
 
-## Templating
+Rules:
 
-Copier uses Jinja2 for dynamic content. Templates are rendered if they end with `.jinja` (configurable).
+- `type`: `str|int|float|bool|json|yaml|path` (`yaml` default). Keep choice
+  values to one type; prefer `str` and convert in template code.
+- Always give `help` and a sane `default` (omit default only to force input).
+  `--defaults` fails on default-less questions unless `-d` supplies them.
+- `validator`: Jinja that renders **empty = valid**, non-empty = error message.
+- `when`: `false` (boolean) or templated string. Skipped questions are not
+  stored, but their default is in render context. Use `when: false` for computed
+  values; render `{{ UNSET }}` as default to leave the var undefined.
+- `choices`: default must match value type. For multiselect bracket values quote
+  explicitly: `default: '["[", "]"]'`, CLI: `-d 'brackets=["[", "]"]'`.
+- `secret: true` **requires** a real default of the question's type; the value
+  never lands in the answers file. `default: null` does NOT satisfy this —
+  verified on Copier 9: `copy --defaults` crashes with
+  `InvalidTypeError: Invalid answer "None" ... of type "str"`. Use a static
+  fallback or `_external_data` (see §5).
+- Conditional/dynamic choices: either `validator` per choice (visible but
+  disabled with message) or templated `choices: |` block (hidden). When mixing
+  both, wrap validator in `{% raw %}...{% endraw %}`.
+- Templating is allowed **only inside string values**, only with
+  already-answered variables. Interactive answers are never re-rendered.
+- Computed, non-asked value: `default: "{{ earlier_var + 1 }}"` + `when: false`.
+  To freeze it across updates (e.g. `copyright_year`), also dump it explicitly
+  in the answers template (see §5).
+- Prefer well-known user defaults names so `settings.yml` reuse works:
+  `user_name`, `user_email`, `github_user`, `gitlab_user`.
 
-### In file content:
+## 4. Jinja rendering rules
+
+- Rendered: files ending in `_templates_suffix` (default `.jinja`) — suffix is
+  stripped on output. Everything else copied verbatim. If both `README.md` and
+  `README.md.jinja` exist, the non-suffixed one is **ignored**.
+- Directory names are templated but must **NOT** end with the suffix.
+- File/dir names, `_exclude`/`_skip_if_exists` patterns, `_messages_*`,
+  `_tasks`, `_migrations`, question `default/help/choices/validator/when` can
+  all contain Jinja.
+- Conditional file: `{% if use_precommit %}.pre-commit-config.yaml{% endif %}.jinja`
+  — suffix stays **outside** the `{% if %}` or the file is not recognized.
+  Use single quotes in path conditions (double quotes are illegal on Windows).
+- Multi-pattern conditional exclude: one list item can render a whole
+  newline-separated gitignore block.
+- `{% yield item from list %}{{ item }}{% endyield %}` in a path loops to
+  generate many files/dirs; loop vars are in scope inside generated files.
+- Reuse snippets via `{% include 'partial.jinja' %}` or
+  `{% from 'macros.jinja' import thing %}` (paths relative to template root).
+  Put partials in `includes/` and `_exclude` it, or use `_subdirectory` so they
+  are never copied. In path names use `pathjoin('includes','x.jinja')` (POSIX
+  separator required).
+- Builtins: all Jinja2 + `jinja2-ansible-filters` (`to_nice_yaml`,
+  `to_nice_json`, `regex_search`, `ans_random|hash('sha512')` for secrets, ...).
+- `_envops` default keeps trailing newlines. Set
+  `_envops: {undefined: jinja2.StrictUndefined}` to fail fast on typos.
+- Useful context: `_copier_answers` (safe, serializable, has `_commit`,
+  `_src_path`), `_copier_conf` (has `.data`, `.dst_path`, `.src_path`,
+  `.sep`, `.os`, `.answers_file` — WARNING `.data` may contain secrets),
+  `_folder_name`, `_copier_python`, `_copier_phase` (prompt/tasks/migrate/render),
+  `_copier_operation` (copy/update — tasks/exclude only), `_external_data`,
+  `UNSET`.
+- `_external_data`: `{namespace: relative/path.yml}` lazily parsed as YAML.
+  Use for multi-template composition (read parent answers) or loading ignored
+  secrets. Paths outside project root require `--trust`.
+
+## 5. Answers file — the update contract
+
+Template must ship `{{ _copier_conf.answers_file }}.jinja` (default name
+`.copier-answers.yml`) with exactly:
+
 ```jinja
-# {{project_name}}/README.md.jinja
-# {{project_name.title()}}
-By: {{author}}
-
-{% if include_license %}
-This project is licensed under MIT.
-{% endif %}
+# Changes here will be overwritten by Copier
+{{ _copier_answers|to_nice_yaml -}}
 ```
 
-### In file/directory names:
-```
-{{project_name}}/
-  {{module_name}}.py.jinja
-  config-{{environment}}.yaml.jinja
-```
+- Commit it in generated projects. Without it there is no smart update.
+- **NEVER edit it by hand** — it makes Copier believe a different answer set
+  produced the project and corrupts future diffs. Change answers via
+  `copier update --defaults -d 'q=new'`, never via editor.
+- Secrets (`secret: true`) are excluded automatically — that is why they need
+  `_external_data` round-tripping if they must persist.
+- Multi-template projects: each template gets its own file
+  (`-a .copier-answers.main.yml`, `-a .copier-answers.ci.yml`, ...) and is
+  updated independently.
 
-### Available Variables
-- `_copier_answers`: User answers (JSON-serializable, excludes secrets)
-- `_copier_conf`: Configuration object with `.answers_file`, `.data`, `.dst_path`, etc.
-- All user-defined question answers (e.g., `{{ project_name }}`)
-- Jinja2 filters from `jinja2-ansible-filters` (e.g., `to_nice_yaml`, `to_json`)
+## 6. Tasks and migrations (unsafe — need `--trust`)
 
-### Example:
-```jinja
-# Store answers for future updates
-{{ _copier_answers|to_nice_yaml }}
-```
-
-## .copier-answers.yml
-
-This file is auto-generated in the destination after copying. Keep it committed to enable intelligent updates:
-
-```yaml
-_commit: 0.1.0          # Template commit/tag used
-_src_path: gh:user/template  # Template source
-project_name: my_project
-module_name: core
-```
-
-**Important:** Never edit this manually—Copier uses it to track template history and apply diffs correctly.
-
-## Updating Projects
-
-The `copier update` workflow:
-
-1. Read `.copier-answers.yml` to find the previous template version
-2. Compare template Git tags using PEP 440 versioning
-3. Prompt user for new/changed answers (defaults to previous values)
-4. Apply diffs from the template, intelligently merging changes
-
-### Update options:
-```bash
-copier update --vcs-ref HEAD           # Update to HEAD instead of latest tag
-copier update --defaults               # Use previous answers, skip prompts
-copier update --data key=value         # Override specific answer
-copier update --conflict inline        # Inline conflict markers (default)
-copier update --conflict rej           # Separate .rej files for conflicts
-```
-
-If conflicts arise, review them manually before committing.
-
-## CLI Commands
-
-```bash
-# Copy (generate from template)
-copier copy [OPTIONS] SRC DST
-  --data/-d KEY=VALUE              # Provide answers programmatically
-  --defaults                       # Use all defaults, no prompts
-  --vcs-ref REF                    # Git tag/branch to use (default: latest tag)
-  --overwrite                      # Overwrite existing files
-  --skip-if-exists                 # Skip files that exist
-  --exclude PATTERN                # Skip matching paths
-  --trust                          # Run tasks without prompting
-  --pretend                        # Show what would happen, don't apply
-  --quiet                          # Suppress output
-  --help-all                       # Show all options
-
-# Update (sync with template changes)
-copier update [OPTIONS] [--vcs-ref REF] [DESTINATION]
-  --defaults                       # Keep previous answers
-  --conflict inline|rej            # Conflict resolution style
-  --context-lines N                # Lines of context in diffs
-
-# Recopy (re-apply template)
-copier recopy [OPTIONS] [DESTINATION]
-  # Re-applies template with existing answers, ignoring history
-```
-
-## Tasks & Migrations
-
-### Tasks (post-copy commands)
-Define in `copier.yml`:
 ```yaml
 _tasks:
   - "git init"
-  - "git add ."
-  - "git commit -m 'Initial commit'"
-```
+  - "git rev-parse --verify HEAD >/dev/null 2>&1 || git commit --allow-empty -m 'Init commit'"
+  - ["mise", "install"]            # array form: no shell, no escaping bugs
+  - command: ["{{ _copier_python }}", task.py]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: rm {{ name }}/README.md
+    when: "{{ _copier_conf.os in ['linux', 'macos'] }}"
 
-Run with `--trust` flag (security feature—prevents untrusted code execution):
-```bash
-copier copy --trust gh:user/template ./project
-```
-
-### Migrations (version-specific transformations)
-```yaml
 _migrations:
-  "0.1.0->0.2.0": |
-    # Python code to transform answers before rendering new version
-    answers["module_name"] = answers.get("module_name", "").lower()
-    import json
-    answers["config"] = json.dumps({"version": "2"})
+  - version: v2.0.0               # run only when old < v2.0.0 <= new (PEP 440)
+    command: rm -rf ./old-folder
+    when: "{{ _stage == 'before' }}"
 ```
 
-## Common Patterns
+- `_tasks` run after **every** copy and update. `_migrations` run only on
+  update (optionally version-gated, `before`/`after` stage via `_stage`).
+  `--skip-tasks` skips tasks but **not** migrations.
+- Each item runs in its own subprocess with `$STAGE`, `$VERSION_FROM`,
+  `$VERSION_TO`, `$VERSION_CURRENT` (+ PEP 440-normalized variants) in env.
+  Answers file is reloaded after `before` migrations, so they can rewrite answers.
+- Keep tasks idempotent, fast, and offline-safe where possible; prefer array
+  form; gate OS-specific commands on `_copier_conf.os`.
+- Any use of tasks/migrations/`_jinja_extensions` makes `copier` abort with
+  exit 4 unless consumer passes `--trust`/`--UNSAFE` (or marks the source in
+  `trust:` in `settings.yml`). Verified: without `--trust` Copier aborts
+  **before rendering anything** — it does NOT render files and silently skip
+  tasks. To render without running tasks: `--trust --skip-tasks`.
 
-### Template directory structure:
+## 7. Versioning, update safety, conflict recovery
+
+- Tag template releases with stable PEP 440 versions (`v1.0.0`). Default copy
+  and `update` resolve to the **latest tag**, not the branch tip. Never move a
+  released tag; use branches or explicit `--vcs-ref` for moving refs.
+- `--vcs-ref HEAD` = current checkout **including dirty files** (needed for
+  local template dev). Without it, dirty files are silently ignored because a
+  tag is checked out instead (FAQ gotcha). `--vcs-ref=:current:` = re-ask
+  without changing version.
+- Before `update`: clean `git status`. Add merge-conflict guard hooks:
+  `check-merge-conflict --assume-in-merge` for `inline`, forbid `*.rej` for
+  `rej` style.
+- How update works: regen old-tag template → diff vs current project → apply
+  pre-migrations → render new-tag template → replay diff → post-migrations.
+  Template-deleted-but-project-deleted paths stay deleted; `skip_if_exists`
+  paths are always restored. If the old template can't be regenerated (missing
+  external resource, incompatible Jinja extension, ancient Copier), fall back
+  to `copier recopy` and resolve with git diff (loses smart merge for that run).
+- Abort a bad update: `git reset; git checkout .; git clean -d -i`
+  (`checkout <branch>` / `merge --abort` do NOT work).
+
+## 8. Caveats and known-issue checklist (verify before shipping)
+
+1. `_exclude` in YAML **replaces** defaults (you lose `copier.yaml`, `.git`, …).
+   CLI `-x` **extends**. With `_subdirectory` set to a real dir, default
+   `_exclude` becomes `[]`. `_exclude` matches **destination** paths.
+2. `copier copy ./src ./dst` on a dirty template checks out latest **tag** —
+   dirty files missing. Use `-r HEAD` while developing.
+3. Shallow template clones cause huge git CPU use — use full clones.
+4. Never put credentials in the source URL (`https://user:pass@…`) — they are
+   recorded in `_src_path` in the answers file. Use SSH keys / credential helpers.
+5. `secret` questions need a default; `choices` defaults must be values with
+   matching `type`; multiselect bracket literals need inner quotes.
+6. `when: false` values aren't stored — explicitly merge them into the answers
+   dump if they must be frozen (`{{ dict(_copier_answers, foo=foo)|to_nice_yaml }}`).
+7. Referencing a later question, or templating a key (not value), or unquoted
+   `default: {{ 'x' }}` are all invalid — keep YAML valid, template values only.
+8. `force` = skip prompts + overwrite; `defaults` = use defaults but still fail
+   on default-less questions; `overwrite` = overwrite files only.
+   `cleanup_on_error` deletes dst only if Copier created it.
+9. `preserve_symlinks: false` (default) replaces links with target content.
+10. Copier ≤5 used `.tmpl` suffix and `[[ ]]` delimiters. For cross-version
+    templates pin `_min_copier_version` and, if needed, set `_envops` to the
+    legacy delimiters. Copier 7+ ignores the legacy fallback.
+11. `_jinja_extensions` code runs at render — audit it, and tell users which
+    extra pip package to install in Copier's own env
+    (`pipx inject copier <pkg>` / `uv tool install --with <pkg> copier`).
+12. One template = one repo. Don't host multiple versioned templates in one
+    repo to share tags — subdirectory-per-variant keyed off an answer
+    (`_subdirectory: "{{ engine }}"`) is the supported exception.
+13. `copier update` needs Git on **both** template and project sides for smart
+    merge; `recopy` is the fallback when that contract is broken.
+
+## 9. Local verification loop (run before commit/release)
+
+```bash
+copier copy --trust --defaults --skip-tasks . /tmp/copier-test   # fast render check
+rm -rf /tmp/copier-test && copier copy --trust --defaults -r HEAD . /tmp/copier-test
+cd /tmp/copier-test && git init && git add . && git commit -qm init
+copier check-update          # expect "up-to-date"
+# simulate template change → tag → copier update --trust --defaults
 ```
-my_template/
-├── copier.yml                   # Configuration & questions
-├── .git/                        # Must be a Git repo
-├── {{project_name}}/
-│   ├── src/
-│   │   └── {{module_name}}.py.jinja
-│   └── tests/
-├── .github/workflows/
-├── README.md.jinja
-└── {{_copier_conf.answers_file}}.jinja
-```
 
-### Multi-variant templates:
-```yaml
-_subdirectory: "templates/{{project_type}}"  # Render different template per type
-```
+Also run the project's own hygiene (`mise run check` / `pre-commit run --all-files`)
+in the generated copy, not just in the template repo.
 
-### Protecting user changes during updates:
-```yaml
-_skip_if_exists:
-  - "config.local.yaml"  # User's local config won't be overwritten
-```
+## 10. References
 
-## Best Practices
-
-- **Version templates with Git tags** using [PEP 440](https://peps.python.org/pep-0440/) (e.g., `1.0.0`, `2.0.0-rc1`)
-- **Use `_subdirectory`** to keep template files separate: `_subdirectory: "template"` puts template files in a subdirectory
-- **Commit `.copier-answers.yml`** in generated projects so future updates work
-- **Use `_skip_if_exists`** for files users customize (config, keys, etc.)
-- **Enable `_tasks` only when safe**; users must pass `--trust` to run them
-- **Use `when:` fields** for conditional questions, not comment-based logic
-- **Use validators** for input validation: `"{% if len(x) < 3 %}Too short{% endif %}"`
-- **Test updates carefully**: conflicts can occur if template and project diverge significantly
-- **Use conflict hooks**: add pre-commit hooks to catch merge conflicts before committing
-
-## Common Pitfalls
-
-- ❌ **Forgetting `--trust`**: Tasks won't run without it
-- ❌ **Editing `.copier-answers.yml` manually**: Breaks the update diff algorithm
-- ❌ **Not tagging template releases**: Updates will use dirty HEAD instead of stable versions
-- ❌ **Template not a Git repo**: Copier can't version or update projects without Git history
-- ❌ **Jinja2 syntax in non-.jinja files**: Only `.jinja` files are rendered
-- ❌ **Complex update conflicts**: Minimize by avoiding large manual changes to generated code
-- ❌ **Forgetting to commit `.copier-answers.yml`**: Project can't be updated later
-
-## Python API
-
-```python
-from copier import run_copy, run_update, run_recopy
-
-# Copy
-run_copy(
-    "path/to/template",
-    "path/to/destination",
-    data={"project_name": "my_app"},
-    defaults=False,
-    overwrite=False,
-    trust=False,
-    vcs_ref="v1.0.0"
-)
-
-# Update
-run_update(
-    "path/to/destination",
-    defaults=False,
-    overwrite=False,
-    vcs_ref=None  # None = latest tag
-)
-
-# Recopy
-run_recopy("path/to/destination", defaults=True)
-```
-
-## Documentation
-
-For detailed docs, see: https://copier.readthedocs.io/en/stable/
-
-Key sections:
-- [Creating templates](https://copier.readthedocs.io/en/stable/creating/)
-- [Generating projects](https://copier.readthedocs.io/en/stable/generating/)
-- [Updating projects](https://copier.readthedocs.io/en/stable/updating/)
-- [Configuration reference](https://copier.readthedocs.io/en/stable/configuring/)
+- Docs: https://copier.readthedocs.io/en/stable/ (creating, configuring,
+  generating, updating, settings, FAQ)
+- Public templates: `https://github.com/topics/copier-template`
+- Local example in this workspace: `copier.yaml` + `template/` (subdirectory
+  pattern, `_preserve`, tasks, slug validator, answers-file template)

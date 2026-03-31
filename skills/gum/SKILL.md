@@ -1,5 +1,6 @@
 ---
 name: gum
+license: MIT
 description: >
   Comprehensive reference for Charmbracelet `gum` — a CLI tool for building glamorous, interactive shell scripts. Use this skill whenever the user mentions gum, wants to build interactive shell scripts with prompts, menus, spinners, styled output, or asks how to make a terminal UI in Bash. Triggers on: `gum choose`, `gum input`, `gum confirm`, `gum filter`, `gum spin`, `gum style`, `gum write`, `gum file`, `gum pager`, `gum table`, `gum format`, `gum join`, `gum log`, interactive CLI wizards, shell script UX, Charmbracelet scripting, or any request to make a shell script more interactive or visually appealing. Always use this skill when the user is writing or debugging a script that uses gum — don't rely on memory alone.
 ---
