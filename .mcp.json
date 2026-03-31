@@ -1,0 +1,15 @@
+{
+  "_comment": "MCP server configurations loaded by the Copilot CLI plugin system.",
+  "_schema": {
+    "mcpServers": {
+      "<server-name>": {
+        "command": "<string> — executable to run (e.g. 'node', 'python', 'npx')",
+        "args": ["<string> — arguments passed to the command"],
+        "env": {
+          "<ENV_VAR>": "<string> — environment variables for the server process"
+        }
+      }
+    }
+  },
+  "mcpServers": {}
+}

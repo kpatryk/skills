@@ -6,6 +6,7 @@
 [![mise](https://img.shields.io/badge/mise-enabled-FF6F00?logo=gnubash&logoColor=white&style=flat-square)](https://mise.jdx.dev)
 [![uv](https://img.shields.io/badge/uv-enabled-DE5FE9?logo=python&logoColor=white&style=flat-square)](https://docs.astral.sh/uv)
 
+- [Install as Copilot CLI Plugin](#install-as-copilot-cli-plugin)
 - [Skills](#skills)
   - [What is a skill?](#what-is-a-skill)
   - [Skills Included](#skills-included)
@@ -13,6 +14,34 @@
     - [JavaScript/TypeScript Development](#javascripttypescript-development)
     - [Code Quality \& Security](#code-quality--security)
     - [Developer Workflow \& Tooling](#developer-workflow--tooling)
+
+# Install as Copilot CLI Plugin
+
+This repository is packaged as a GitHub Copilot CLI plugin (`kpatryk-skills`). Install all skills at once:
+
+```bash
+# Install directly from GitHub
+copilot plugin install gh:kpatryk/skills
+
+# Or install from a local clone
+copilot plugin install ./skills
+
+# Verify the plugin is loaded
+copilot plugin list
+```
+
+Once installed, all skills in this repository become available in your Copilot CLI session. You can verify with:
+
+```bash
+# In an interactive Copilot session
+/skills list
+```
+
+To update to the latest version, re-run the install command. To remove the plugin:
+
+```bash
+copilot plugin uninstall kpatryk-skills
+```
 
 # Skills
 This repository hosts AI skills for developer tools and agentic systems. The list of skills is curated to cover a broad range of essential tools across the Python ecosystem, JavaScript/TypeScript, security & DevOps, and terminal productivity. Each skill is defined in a `SKILL.md` file with YAML frontmatter specifying trigger patterns and comprehensive documentation covering CLI commands, key patterns, configuration, gotchas, and best practices.
