@@ -1,5 +1,6 @@
 ---
 name: uv
+license: MIT
 description: >
   Comprehensive guide for uv — the extremely fast Python package and project manager written in Rust
   by Astral. uv replaces pip, pip-tools, pipx, poetry, pyenv, twine, and virtualenv in a single tool.

@@ -1,5 +1,6 @@
 ---
 name: git-cliff
+license: MIT
 description: |
   Expert guide for git-cliff, a highly customizable changelog generator from git history. Invoke this skill whenever the user wants to generate, update, or customize a CHANGELOG.md file; auto-bump semantic versions; configure cliff.toml; write Tera templates for changelogs; work with conventional commits for changelog purposes; set up git-cliff in CI/CD pipelines; filter commits by path for monorepos; integrate GitHub/GitLab remote metadata into changelogs; debug changelog output; or run any git-cliff CLI command. Use even when the user just says "generate changelog", "update my CHANGELOG", "prep release notes", or "bump my version" — any changelog or release-notes workflow likely benefits from this skill.
 ---

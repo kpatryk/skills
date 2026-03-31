@@ -1,5 +1,6 @@
 ---
 name: semgrep
+license: MIT
 description: >
   Comprehensive reference for Semgrep — the open-source static analysis tool that finds bugs, enforces code patterns, and detects security vulnerabilities across 30+ languages using semantic pattern matching. Use this skill whenever the user asks about running Semgrep scans, writing custom Semgrep rules, configuring Semgrep in CI/CD, interpreting scan results, using the Semgrep registry, setting up pre-commit hooks, or understanding Semgrep's YAML rule syntax. Trigger on any mention of semgrep, static analysis rules, custom SAST rules, code pattern matching, security scanning with semgrep, or semgrep integration.
 ---

@@ -1,5 +1,6 @@
 ---
 name: worktrunk
+license: MIT
 description: Expert guide for Worktrunk (the `wt` CLI), a git worktree manager designed for running AI agents in parallel. Invoke this skill whenever a user mentions worktrunk or wt commands (wt switch, wt list, wt merge, wt remove, wt hook, wt step, wt config), asks about git worktrees for AI agents or parallel development, wants to configure LLM commit messages, set up worktree lifecycle hooks, run multiple Claude or Codex agents simultaneously, use wt list CI status, configure the interactive picker, copy build caches between worktrees, or troubleshoot shell integration. Also use for questions about .config/wt.toml, ~/.config/worktrunk/config.toml, hash_port, sanitize filters, wt merge squash/rebase workflow, wt step copy-ignored, wt step prune, agent handoffs, dev servers per worktree, bare repository layouts, or any other worktrunk topic.
 ---
 
