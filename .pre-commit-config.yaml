@@ -4,6 +4,7 @@ default_stages: [pre-commit]
 default_install_hook_types:
   - pre-commit
   - commit-msg
+  - pre-push
 
 repos:
 - repo: https://github.com/compilerla/conventional-pre-commit
@@ -35,3 +36,23 @@ repos:
   - id: mixed-line-ending
   - id: trailing-whitespace
     args: [--markdown-linebreak-ext=md]
+
+- repo: https://github.com/lycheeverse/lychee.git
+  rev: lychee-v0.23.0
+  hooks:
+    - id: lychee
+      name: "check for dead links in markdown files with lychee"
+      args: [
+        "--no-progress",
+        "--scheme", "https",
+        "--scheme", "http",
+        "--timeout", "10",
+        "--max-concurrency", "256",
+        "--host-concurrency", "20",
+        "--max-retries", "2",
+        "--exclude", "x.com|twitter.com|reddit.com|linkedin.com|facebook.com|instagram.com|localhost",
+        "--require-https",
+        "**/*.md"
+      ]
+      pass_filenames: false
+      stages: [pre-push]
