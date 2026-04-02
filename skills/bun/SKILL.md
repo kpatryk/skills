@@ -376,7 +376,7 @@ Key sections:
 - [Runtime](https://bun.com/docs/runtime)
 - [Test Runner](https://bun.com/docs/test)
 - [Bundler](https://bun.com/docs/bundler)
-- [API Reference](https://bun.com/docs/api)
+- [Runtime APIs](https://bun.com/docs/runtime/bun-apis)
 
 ## Requirements
 

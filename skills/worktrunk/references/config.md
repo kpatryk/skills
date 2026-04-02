@@ -236,7 +236,7 @@ aliases.deploy = "make deploy BRANCH={{ branch }}"
 
 ### Custom prompt templates
 
-Templates use [minijinja](https://docs.rs/minijinja/) syntax.
+Templates use [minijinja](https://docs.rs/minijinja/latest/minijinja/) syntax.
 
 #### Commit template
 

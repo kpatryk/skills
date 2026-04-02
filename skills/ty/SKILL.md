@@ -69,7 +69,7 @@ mise install ty
 ### Standalone installer
 Use the official Astral installation docs for platform-specific installer instructions:
 
-- https://docs.astral.sh/ty/getting-started/installation/
+- https://docs.astral.sh/ty/installation/
 
 ### Docker
 ```dockerfile
