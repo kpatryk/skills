@@ -1,19 +1,11 @@
 [tools]
+pre-commit = "4.6.2"
 python = "3.12"
-uv = "latest"
-
-[settings]
-# Automatically create .venv if it doesn't exist, then activate it
-python.uv_venv_auto = "create|source"
-
-[env]
-# Make mise fully aware of the uv-managed virtual environment
-_.python.venv = { path = ".venv" }
+uv = "0.12.10"
 
 [tasks.install]
-description = "Install dependencies and set up pre-commit hooks"
+description = "Install pre-commit hooks"
 run = [
-  "uv sync --dev",
   "pre-commit install"
 ]
 
@@ -27,10 +19,6 @@ run = """
 """
 
 # Useful shortcuts
-[tasks.sync]
-description = "Sync dependencies with uv (alias for uv sync --dev)"
-run = "uv sync --dev"
-
-[tasks.pre-commit]
+[tasks.hooks]
 description = "Run pre-commit hooks on all files"
 run = "pre-commit run --all-files"
