@@ -6,6 +6,11 @@ minimum_prek_version = "0.5.9"
 default_stages = ["pre-commit"]
 default_install_hook_types = ["pre-commit", "commit-msg"]
 
+# Supply-chain hardening: only adopt hook releases at least 7 days old,
+# so a freshly published (possibly compromised) tag is never auto-adopted.
+[update]
+cooldown_days = 7
+
 # Ordering best practice: cheap fail-fast guards first (no file
 # modifications), then whitespace/line-ending fixers that rewrite files, then
 # syntax and permission validators that check the final content, and finally

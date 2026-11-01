@@ -2,7 +2,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square)](https://github.com/pre-commit/pre-commit)
+[![prek](https://raw.githubusercontent.com/j178/prek/main/docs/assets/badge.svg)](https://github.com/j178/prek)
 [![mise](https://img.shields.io/badge/mise-enabled-FF6F00?logo=gnubash&logoColor=white&style=flat-square)](https://mise.jdx.dev)
 [![uv](https://img.shields.io/badge/uv-enabled-DE5FE9?logo=python&logoColor=white&style=flat-square)](https://docs.astral.sh/uv)
 
@@ -82,7 +82,7 @@ Each skill is a specialized knowledge domain for AI assistants. The `SKILL.md` f
 │   └── plugin/marketplace.json         # marketplace manifest (mirrors plugin.json)
 ├── plugin.json              # Copilot CLI plugin manifest (name: kpatryk-skills)
 ├── mise.toml                # mise tools (prek, python, uv) and tasks (install, hooks, clean)
-├── .pre-commit-config.yaml  # local hooks: plugin validation, conventional commits, hygiene
+├── prek.toml                   # prek hooks: conventional commits, hygiene (builtins first)
 ├── CODE_OF_CONDUCT.md
 └── LICENSE
 ```

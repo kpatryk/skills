@@ -5,9 +5,9 @@ python = "3.12"
 uv = "0.12.10"
 
 [tasks.install]
-description = "Install pre-commit hooks"
+description = "Install prek git shims"
 run = [
-  "pre-commit install"
+  "prek install -f"
 ]
 
 [tasks.clean]
@@ -21,8 +21,12 @@ run = """
 
 # Useful shortcuts
 [tasks.hooks]
-description = "Run pre-commit hooks on all files"
-run = "pre-commit run --all-files"
+description = "Run prek hooks on all files"
+run = "prek run --all-files"
+
+[tasks."hooks:update"]
+description = "Update prek hook versions (respects cooldown_days)"
+run = "prek update"
 
 [tasks.skills-clean]
 description = "Preview broken global skill symlinks (asks before removing)"
