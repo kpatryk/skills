@@ -2,41 +2,52 @@
 # See https://prek.j178.dev for more information.
 #:schema https://www.schemastore.org/prek.json
 
-minimum_pre_commit_version = "4.0.0"
+minimum_prek_version = "0.5.9"
 default_stages = ["pre-commit"]
-default_install_hook_types = [
-  "pre-commit",
-  "commit-msg"
-  ]
+default_install_hook_types = ["pre-commit", "commit-msg"]
+
+# Ordering best practice: cheap fail-fast guards first (no file
+# modifications), then whitespace/line-ending fixers that rewrite files, then
+# syntax and permission validators that check the final content, and finally
+# the slowest linters. Repos follow the same order: builtins first, other
+# pre-commit-stage remotes next, commit-msg hooks last.
 
 [[repos]]
-repo = "https://github.com/compilerla/conventional-pre-commit"
-rev = "v4.4.0"
+# Rust-native builtin hooks: no clone, no env setup, work offline.
+# Covers every eligible hook previously taken from pre-commit-hooks.
+repo = "builtin"
 hooks = [
-  { id = "conventional-pre-commit", stages = ["commit-msg"], args = ["--verbose"] },
+  # Guards: fail fast before anything is modified.
+  { id = "check-added-large-files" },
+  { id = "check-merge-conflict" },
+  { id = "detect-private-key" },
+  # Fixers: rewrite files, so validators below see the final content.
+  { id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"] },
+  { id = "end-of-file-fixer" },
+  { id = "fix-byte-order-marker" },
+  { id = "mixed-line-ending" },
+  # Validators: check the fixed content.
+  # --disallow-unknown-tags keeps parity with the upstream Python check-yaml,
+  # which rejects unknown tags that the builtin allows by default.
+  { id = "check-yaml", args = ["--allow-multiple-documents", "--disallow-unknown-tags"] },
+  { id = "check-toml" },
+  { id = "check-executables-have-shebangs" },
 ]
 
 [[repos]]
+# No builtin equivalents: binary guard first, slowest linter last.
 repo = "https://github.com/jumanjihouse/pre-commit-hooks"
 rev = "3.0.0"
 hooks = [
   { id = "forbid-binary" },
   { id = "script-must-have-extension" },
-  { id = "shellcheck" }
+  { id = "shellcheck" },
 ]
 
 [[repos]]
-repo = "https://github.com/pre-commit/pre-commit-hooks"
-rev = "v6.0.0"
+# Commit-msg stage: runs separately from pre-commit hooks, so listed last.
+repo = "https://github.com/compilerla/conventional-pre-commit"
+rev = "v4.4.0"
 hooks = [
-  { id = "check-added-large-files" },
-  { id = "check-executables-have-shebangs" },
-  { id = "check-merge-conflict" },
-  { id = "check-toml" },
-  { id = "check-yaml", args = ["--allow-multiple-documents"] },
-  { id = "detect-private-key" },
-  { id = "end-of-file-fixer" },
-  { id = "fix-byte-order-marker" },
-  { id = "mixed-line-ending" },
-  { id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"] },
+  { id = "conventional-pre-commit", stages = ["commit-msg"], args = ["--verbose"] },
 ]
