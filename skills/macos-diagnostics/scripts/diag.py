@@ -125,9 +125,8 @@ def cmd_init(args: argparse.Namespace) -> int:
             print(f"  - {item}")
     else:
         print("Already existed; nothing overwritten.")
-    print(f"\nNext: append evidence, e.g.")
-    print(f"  <command> | python3 scripts/diag.py log --root {args.root} "
-          f"--slug {args.slug} --stream command --label \"<what you ran>\"")
+    print("\nNext: append evidence, e.g.")
+    print(f'  <command> | python3 scripts/diag.py log --root {args.root} --slug {args.slug} --stream command --label "<what you ran>"')
     return 0
 
 
@@ -138,12 +137,7 @@ def cmd_log(args: argparse.Namespace) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     label = args.label or "(no label)"
-    header = (
-        "=" * 78
-        + f"\n[{_stamp()}] {label}\n"
-        + "-" * 78
-        + "\n"
-    )
+    header = "=" * 78 + f"\n[{_stamp()}] {label}\n" + "-" * 78 + "\n"
     with path.open("a", encoding="utf-8") as fh:
         fh.write(header)
         fh.write(content)
@@ -170,14 +164,15 @@ def cmd_finalize(args: argparse.Namespace) -> int:
     elif destination.exists():
         moved = False  # idempotent re-run
     else:
-        print(f"Error: no working or {area} folder found for slug '{args.slug}'", file=sys.stderr)
+        print(
+            f"Error: no working or {area} folder found for slug '{args.slug}'",
+            file=sys.stderr,
+        )
         return 1
 
     report = destination / "report.md"
     if not report.exists():
-        report.write_text(
-            REPORT_STUB.format(title=args.slug, slug=args.slug), encoding="utf-8"
-        )
+        report.write_text(REPORT_STUB.format(title=args.slug, slug=args.slug), encoding="utf-8")
         print(f"Warning: report.md was missing; wrote a stub at {report}", file=sys.stderr)
 
     # Ensure traces exist so the report's references are valid.
@@ -199,10 +194,7 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         machine_os = args.machine or "[machine]"
         if args.os:
             machine_os = f"{machine_os} / {args.os}"
-        row = (
-            f"| [{args.slug}]({link}) | {args.description or '[description]'} "
-            f"| {machine_os} | {args.date} | [View Full Report]({link}) |\n"
-        )
+        row = f"| [{args.slug}]({link}) | {args.description or '[description]'} | {machine_os} | {args.date} | [View Full Report]({link}) |\n"
         with index.open("a", encoding="utf-8") as fh:
             fh.write(row)
 
@@ -228,7 +220,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="macOS diagnostics workspace helper")
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument(
-        "--root", default="diagnostics",
+        "--root",
+        default="diagnostics",
         help="Diagnostics root directory (default: diagnostics)",
     )
     sub = parser.add_subparsers(dest="command", required=True)
