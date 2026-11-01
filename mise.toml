@@ -1,0 +1,29 @@
+[tools]
+"pipx:check-jsonschema" = "latest"
+prek = "0.5.9"
+python = "3.12"
+uv = "0.12.10"
+
+[tasks.install]
+description = "Install pre-commit hooks"
+run = [
+  "pre-commit install"
+]
+
+[tasks.clean]
+description = "Remove cache files, temporary directories, and build artifacts"
+run = """
+    rm -rf \
+      __pycache__ .pytest_cache .ruff_cache .mypy_cache \
+      .coverage htmlcov \
+      *.py[cod] *.egg-info dist build
+"""
+
+# Useful shortcuts
+[tasks.hooks]
+description = "Run pre-commit hooks on all files"
+run = "pre-commit run --all-files"
+
+[tasks.skills-clean]
+description = "Preview broken global skill symlinks (asks before removing)"
+run = "./scripts/check_broken_skills.py"
