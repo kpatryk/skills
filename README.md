@@ -1,5 +1,5 @@
 [![Scan Skills](https://github.com/kpatryk/skills/actions/workflows/scan-skills.yml/badge.svg)](https://github.com/kpatryk/skills/actions/workflows/scan-skills.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square)](https://github.com/pre-commit/pre-commit)
