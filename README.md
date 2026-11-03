@@ -6,29 +6,46 @@
 [![mise](https://img.shields.io/badge/mise-enabled-FF6F00?logo=gnubash&logoColor=white&style=flat-square)](https://mise.jdx.dev)
 [![uv](https://img.shields.io/badge/uv-enabled-DE5FE9?logo=python&logoColor=white&style=flat-square)](https://docs.astral.sh/uv)
 
+- [Install as Claude Code Plugin](#install-as-claude-code-plugin)
 - [Install as Copilot CLI Plugin](#install-as-copilot-cli-plugin)
+- [Install with the skills CLI](#install-with-the-skills-cli)
 - [Skills](#skills)
   - [What is a skill?](#what-is-a-skill)
   - [Skills Included](#skills-included)
-- [Repository Structure](#repository-structure)
+
+# Install as Claude Code Plugin
+
+This repository is also a Claude Code plugin marketplace (`kpatryk-skills`). Install the plugin in one step on Claude Code 2.1.275 or later:
+
+```bash
+/plugin install kpatryk-skills --marketplace kpatryk/skills
+```
+
+Or add the marketplace first and install from it:
+
+```bash
+/plugin marketplace add kpatryk/skills
+/plugin install kpatryk-skills@kpatryk-skills
+```
 
 # Install as Copilot CLI Plugin
 
 This repository is packaged as a GitHub Copilot CLI plugin (`kpatryk-skills`). Install all skills at once:
 
 ```bash
-# Install directly from GitHub
+# Install directly from GitHub (root plugin.json)
 copilot plugin install kpatryk/skills
 
-# Or add as a marketplace and install from there
+# Or add the marketplace and install the plugin from it
 copilot plugin marketplace add kpatryk/skills
-copilot plugin marketplace browse kpatryk-skills
+copilot plugin install kpatryk-skills@kpatryk-skills
 
 # Or install from a local clone
 copilot plugin install ./path/to/skills
 
 # Verify the plugin is loaded
 copilot plugin list
+copilot skill list   # plugin skills show under "Plugin skills:"
 ```
 
 Once installed, all skills in this repository become available in your Copilot CLI session. You can verify with:
@@ -43,6 +60,23 @@ To update to the latest version, re-run the install command. To remove the plugi
 ```bash
 copilot plugin uninstall kpatryk-skills
 ```
+
+# Install with the skills CLI
+
+The [`skills`](https://skills.sh) CLI scans `skills/` directly and reads `.claude-plugin/plugin.json` to group the results under **Kpatryk Skills**:
+
+```bash
+# List the skills the repo provides
+skills add -l kpatryk/skills
+
+# Install every skill globally for every detected agent
+skills add -g kpatryk/skills --all
+
+# Or pick the skill and target agent explicitly
+skills add -g kpatryk/skills --skill macos-diagnostics -a claude-code -y
+```
+
+`-g` writes to each selected agent's user-level directory (`~/.claude/skills`, `~/.copilot/skills`, `~/.agents/skills`, …). Drop `-g` to install into the current project instead.
 
 # Skills
 This repository hosts AI skills for developer tools and agentic systems. Each skill is defined in a `SKILL.md` file with YAML frontmatter specifying trigger patterns and comprehensive documentation covering CLI commands, key patterns, configuration, gotchas, and best practices.
@@ -60,29 +94,3 @@ Each skill is a specialized knowledge domain for AI assistants. The `SKILL.md` f
 |-------|---------|
 | **macos-diagnostics** | Evidence-first troubleshooting for macOS system issues (battery, heat/fans, panics, Wi-Fi/Bluetooth, sleep/wake, slowness, disk) and dev tools on Mac (`brew`, `mise`, `bun`, `npm`/`pnpm`/`yarn`, `uv`, `pip`/`pipx`/`poetry`) |
 | **prek-migrate** | Migrate a repo from pre-commit to prek (YAML→`prek.toml` conversion, `repo: builtin` switch, `cooldown-days` hardening, mise/CI/docs cleanup) |
-
-# Repository Structure
-
-```text
-.
-├── skills/
-│   ├── macos-diagnostics/
-│   │   ├── SKILL.md
-│   │   ├── evals/evals.json
-│   │   ├── references/templates.md
-│   │   └── scripts/diag.py
-│   └── prek-migrate/
-│       ├── SKILL.md
-│       └── evals/evals.json
-├── hooks/
-│   └── validate-plugin.sh   # validates plugin.json against the agent-plugins schema
-├── .github/
-│   ├── workflows/scan-skills.yml       # runs skill-scanner on skills/ changes
-│   ├── skill-scanner-policy.yaml       # policy for the scanner
-│   └── plugin/marketplace.json         # marketplace manifest (mirrors plugin.json)
-├── plugin.json              # Copilot CLI plugin manifest (name: kpatryk-skills)
-├── mise.toml                # mise tools (prek, python, uv) and tasks (install, hooks, clean)
-├── prek.toml                   # prek hooks: conventional commits, hygiene (builtins first)
-├── CODE_OF_CONDUCT.md
-└── LICENSE
-```

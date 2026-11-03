@@ -1,0 +1,23 @@
+{
+    "name": "kpatryk-skills",
+    "version": "0.1.0",
+    "description": "Agent skills for tool usage, engineering, cyber etc.",
+    "author": {
+        "name": "Patryk",
+        "url": "https://www.kpatryk.com"
+    },
+    "license": "MIT",
+    "icon": "./assets/icon.png",
+    "keywords": [
+        "engineering",
+        "skills",
+        "tdd",
+        "code-review",
+        "tools",
+        "productivity"
+    ],
+    "skills": [
+        "./skills/tools/prek-migrate",
+        "./skills/process/macos-diagnostics"
+    ]
+}

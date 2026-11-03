@@ -31,3 +31,10 @@ run = "prek update"
 [tasks.skills-clean]
 description = "Preview broken global skill symlinks (asks before removing)"
 run = "./scripts/check_broken_skills.py"
+
+[tasks.skills-validate]
+description = "Validate skills and plugin manifests with the Claude plugin validator"
+run = [
+  "claude plugin validate . --profile directory --strict",
+  "claude plugin validate skills",
+]
