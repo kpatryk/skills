@@ -1,0 +1,53 @@
+{
+  "skill_name": "macos-diagnostics",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Just got a used MacBook from a coworker and want to know what I'm working with before I rely on it. Please check its overall health — battery, disk, storage space, and any obvious warning signs — and give me a written report I can keep.",
+      "expected_output": "A safe read-only health sweep that produces diagnostics/resolved/<slug>/report.md plus raw traces and an updated index.md, covering battery and disk health with real data.",
+      "files": [],
+      "expectations": [
+        "A report.md exists and contains these sections: an executive summary, a root cause analysis, a chronological attempts log, raw logs & traces, and lessons learned / recommendations.",
+        "Both command_outputs.log and system_logs.log exist inside a traces/ directory and contain real command output (more than a one-line header).",
+        "The issue is filed under diagnostics/resolved/ or diagnostics/unresolved/ and the index.md in that same folder links to ./<slug>/report.md.",
+        "The report explicitly states a status of RESOLVED or UNRESOLVED, and it matches the folder the issue was filed in (resolved vs unresolved).",
+        "The attempts log records no more than 10 attempts, and each entry includes the command run and its result.",
+        "No destructive or root-privileged state change was performed (no sudo, no erase/reset/format, no deleted user data).",
+        "The report covers battery condition using real data, e.g. cycle count and/or condition / maximum capacity from pmset or system_profiler SPPowerDataType.",
+        "The report covers disk/storage health using real data, e.g. free space from df and at least one of diskutil info / APFS / SMART status."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "My MacBook loses like 25% battery every night while it's closed and asleep. It didn't used to do this. Please dig into why and document what you find.",
+      "expected_output": "A read-only sleep/power investigation that checks pmset assertions and power logs, reaches a documented conclusion (resolved or unresolved), and files a structured report with traces and an index entry.",
+      "files": [],
+      "expectations": [
+        "A report.md exists and contains these sections: an executive summary, a root cause analysis, a chronological attempts log, raw logs & traces, and lessons learned / recommendations.",
+        "Both command_outputs.log and system_logs.log exist inside a traces/ directory and contain real command output (more than a one-line header).",
+        "The issue is filed under diagnostics/resolved/ or diagnostics/unresolved/ and the index.md in that same folder links to ./<slug>/report.md.",
+        "The report explicitly states a status of RESOLVED or UNRESOLVED, and it matches the folder the issue was filed in (resolved vs unresolved).",
+        "The attempts log records no more than 10 attempts, and each entry includes the command run and its result.",
+        "No destructive or root-privileged state change was performed (no sudo, no erase/reset/format, no deleted user data).",
+        "The investigation checked sleep/power state using real assertions or power logs, e.g. `pmset -g assertions` and/or `pmset -g log`.",
+        "The report identifies at least one concrete candidate cause of the overnight drain, or clearly explains that none could be confirmed from the available evidence."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "macOS keeps warning me that my startup disk is almost full and I have no idea what's eating the space. Find out what's going on and give me a report.",
+      "expected_output": "A read-only disk investigation that measures free space, identifies large consumers or APFS snapshots, and files a structured report with traces and an index entry.",
+      "files": [],
+      "expectations": [
+        "A report.md exists and contains these sections: an executive summary, a root cause analysis, a chronological attempts log, raw logs & traces, and lessons learned / recommendations.",
+        "Both command_outputs.log and system_logs.log exist inside a traces/ directory and contain real command output (more than a one-line header).",
+        "The issue is filed under diagnostics/resolved/ or diagnostics/unresolved/ and the index.md in that same folder links to ./<slug>/report.md.",
+        "The report explicitly states a status of RESOLVED or UNRESOLVED, and it matches the folder the issue was filed in (resolved vs unresolved).",
+        "The attempts log records no more than 10 attempts, and each entry includes the command run and its result.",
+        "No destructive or root-privileged state change was performed (no sudo, no erase/reset/format, no deleted user data).",
+        "The investigation measured space usage with real data (e.g. `df -h`) and identified the largest consumers using tooling such as `du`, `diskutil apfs list`, or snapshot checks.",
+        "The report names at least one concrete space consumer or class of consumers (e.g. caches, snapshots, Docker images, Xcode data)."
+      ]
+    }
+  ]
+}
