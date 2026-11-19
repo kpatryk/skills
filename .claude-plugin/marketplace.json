@@ -1,0 +1,24 @@
+{
+    "name": "kpatryk-skills",
+    "owner": {
+        "name": "Patryk",
+        "url": "https://www.kpatryk.com"
+    },
+    "description": "Patryk skills to be installed as an Claude Code plugin.",
+    "plugins": [
+        {
+            "name": "kpatryk-skills",
+            "source": "./",
+            "description": "Agent skills for tool usage, engineering, cyber etc.",
+            "category": "engineering",
+            "keywords": [
+                "engineering",
+                "skills",
+                "tdd",
+                "code-review",
+                "tools",
+                "productivity"
+            ]
+        }
+    ]
+}
