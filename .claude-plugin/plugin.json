@@ -18,6 +18,7 @@
     ],
     "skills": [
         "./skills/tools/prek-migrate",
+        "./skills/tools/mise-git-defaults",
         "./skills/process/macos-diagnostics",
         "./skills/process/git-atomic-commits",
         "./skills/process/git-fixup"

@@ -95,3 +95,4 @@ Each skill is a specialized knowledge domain for AI assistants. The `SKILL.md` f
 | **git-atomic-commits** | Split staged + unstaged changes into atomic hunk-level Conventional Commits (plan first, execute after approval) |
 | **macos-diagnostics** | Evidence-first troubleshooting for macOS system issues (battery, heat/fans, panics, Wi-Fi/Bluetooth, sleep/wake, slowness, disk) and dev tools on Mac (`brew`, `mise`, `bun`, `npm`/`pnpm`/`yarn`, `uv`, `pip`/`pipx`/`poetry`) |
 | **prek-migrate** | Migrate a repo from pre-commit to prek (YAML→`prek.toml` conversion, `repo: builtin` switch, `cooldown-days` hardening, mise/CI/docs cleanup) |
+| **mise-git-defaults** | Add shared git defaults via mise `enter` hook in `mise.toml` (`blame.ignoreRevsFile`, `histogram` diff, `zdiff3`, `rerere`, `fetch.prune`, plus safe push/pull/branch defaults) |
