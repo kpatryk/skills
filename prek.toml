@@ -2,7 +2,7 @@
 # See https://prek.j178.dev for more information.
 #:schema https://www.schemastore.org/prek.json
 
-minimum_prek_version = "0.5.9"
+minimum_prek_version = "0.5.12"
 default_stages = ["pre-commit"]
 default_install_hook_types = ["pre-commit", "commit-msg"]
 

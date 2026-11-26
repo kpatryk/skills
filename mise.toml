@@ -1,9 +1,9 @@
 [tools]
-"pipx:check-jsonschema" = "latest"
-prek = "0.5"
+"pipx:check-jsonschema" = "0.39.0"
+prek = "0.5.12"
 uv = "0.13"
 
-[tasks.install]
+[tasks."prek:install"]
 description = "Install prek git shims"
 run = [
   "prek install -f"
@@ -19,11 +19,11 @@ run = """
 """
 
 # Useful shortcuts
-[tasks.hooks]
+[tasks."prek:run"]
 description = "Run prek hooks on all files"
 run = "prek run --all-files"
 
-[tasks."hooks:update"]
+[tasks."prek:update"]
 description = "Update prek hook versions (respects cooldown_days)"
 run = "prek update"
 
