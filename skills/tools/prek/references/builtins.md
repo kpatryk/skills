@@ -99,6 +99,14 @@ Mappings 1–3 move eligible `pre-commit-hooks` hooks; mapping 4 replaces a loca
 
 ## Caveats
 
+- On re-runs (audit mode) the installed prek may know builtins the config
+  predates — drift newly-eligible ids into the builtin block then, too
+  (`references/maintain.md`).
+- Within the builtin block, keep guards first (fail fast, no file
+  modifications), then fixers that rewrite files, then validators that check
+  the final content — but do not reorder repos/hooks for aesthetics beyond
+  that: hook order is execution order unless `priority` is used.
+
 - `file-contents-sorter` defaults to `files: '^$'`, which matches nothing — it
   is a silent no-op without `files:`. Copy the old `files:`; if the old hook
   had none, it was already a no-op. Flag it and either add `files:`, drop the

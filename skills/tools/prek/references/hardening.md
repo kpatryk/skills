@@ -1,8 +1,10 @@
-# Supply-chain hardening — OPT-IN
+# Supply-chain hardening — mandatory cooldown, opt-in pins
 
-Use only when the user asks to harden updates ("harden", "supply chain",
-"cooldown", "pin updates"). It changes update behavior and can surprise
-maintainers, so never enable it as part of a plain migration.
+Every migration and every audit lands `[update] cooldown_days = 7`. It changes
+update behavior, which is exactly the point: without it, `prek update` adopts
+the newest eligible tag, so a freshly published (possibly compromised) release
+is adopted on the next update. `freeze` and tag filters stay opt-in — offer
+them in the plan proposal, never apply them silently.
 
 ## Why
 

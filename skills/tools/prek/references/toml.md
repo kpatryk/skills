@@ -42,10 +42,11 @@ hooks = [
 ]
 ```
 
-Add an `[update]` block only when hardening is requested
-(`references/hardening.md`); a plain migration leaves update behavior at its
-defaults. `minimum_prek_version` is also optional here: commit 3 sets it to
-the installed `prek --version`.
+Add an `[update]` block in every migration and audit
+(`references/maintain.md` backfills it into repos migrated before hardening
+became mandatory); a config without one is unhardened. `minimum_prek_version`
+is mandatory too: commit 3 (migrate) or the audit commit sets it to the
+installed `prek --version`.
 
 Inline hook tables and `[[repos.hooks]]` arrays of tables are equivalent; use
 whichever the converter emits and keep edits local.
@@ -81,6 +82,7 @@ config. Confirm with `prek list` (it lists hooks from the active config);
 `prek run --dry-run` also shows what would run. On older prek versions the
 YAML can win — pass `-c prek.toml` explicitly to every command (`run`,
 `validate-config`, `install`, `update`) until the YAML is deleted in commit 2.
+In audit mode there is no YAML, so no flag is needed.
 
 Do not keep both configs long-term to "be safe": they drift. One config
 (`prek.toml`), one installer (`prek install`), one runner (`prek run`).

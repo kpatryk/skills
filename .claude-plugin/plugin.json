@@ -17,7 +17,7 @@
         "productivity"
     ],
     "skills": [
-        "./skills/tools/prek-migrate",
+        "./skills/tools/prek",
         "./skills/tools/mise-git-defaults",
         "./skills/process/macos-diagnostics",
         "./skills/process/git-atomic-commits",
